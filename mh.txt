@@ -1,0 +1,21 @@
+[1] .Net Core 3.0
+
+
+[2] MVC
+
+[3] Configure HTTPS
+
+[4] Configure Kestrel instead of IIS (Kestrel web server implementation in ASP.NET Core)
+
+
+[5] with Quartz Net scheduler:
+...
+https://csharpdigest.net/links/7558/redirect?medium=web
+...
+Use Quartz.Net for background and recurring jobs with ASP.NET Core 3.0
+...
+In this post, I show how to use the fantastic Quartz.Net scheduler library within a ASP.NET Core 3.0 application. It allows to do background, delayed and recurring jobs with ease.
+
+
+[6] with MQ lets say Kafka, but I want RabbitMQ:
+...
