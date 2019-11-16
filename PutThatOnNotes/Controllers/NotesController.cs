@@ -8,10 +8,6 @@ namespace PutThatOnNotes.Controllers
 {
     public class NotesController : Controller
     {
-        private static int _currentNoteId;
-        private static DateTime _currentNoteCreationDate;
-        private static DateTime _currentNoteLastModificationDate;
-
         private readonly NotesRepository _notesRepository;
 
         public NotesController(DbContextOptions<PutThatOnNotesDbContext> options)
@@ -30,9 +26,6 @@ namespace PutThatOnNotes.Controllers
         public ActionResult Details(int id)
         {
             var model = _notesRepository.Get(id);
-
-            RememberOriginalValuesOfReadonlyNoteProps(model);
-
             return View(model);
         }
 
@@ -40,29 +33,26 @@ namespace PutThatOnNotes.Controllers
         public ActionResult Create()
         {
             var modelToCreate = new Note();
-
-            RememberOriginalValuesOfReadonlyNoteProps(modelToCreate);
-
             return View(modelToCreate);
         }
 
         // POST: Notes/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]  // TODO: Vas is das? Check if it is setuped and used at all. 
+        [ValidateAntiForgeryToken]  // TODO: What is that? Check if it is setuped and used at all. 
         public ActionResult Create(Note model)
         {
             try
             {
                 TryUpdateModelAsync(model);
 
-                SetOriginalValuesOfReadonlyNoteModelProps(model);
-                MarkValidValidationStateForReadonlyNoteProps(model);
-
                 if (ModelState.IsValid)
                 {
                     var now = DateTime.Now;
                     model.CreationDate = now;
                     model.LastModificationDate = now;
+
+                    // Clarify* here doing model.Id=0; , because _notesRepository.Save(model); does: if (model.Id == 0){Create(model);} else{Update(model);} .
+                    model.Id = 0;
 
                     _notesRepository.Save(model);
 
@@ -81,9 +71,6 @@ namespace PutThatOnNotes.Controllers
         public ActionResult Edit(int id)
         {
             var modelToUpdate = _notesRepository.Get(id);
-
-            RememberOriginalValuesOfReadonlyNoteProps(modelToUpdate);
-
             return View(modelToUpdate);
         }
 
@@ -96,11 +83,9 @@ namespace PutThatOnNotes.Controllers
             {
                 TryUpdateModelAsync(model);
 
-                SetOriginalValuesOfReadonlyNoteModelProps(model);
-                MarkValidValidationStateForReadonlyNoteProps(model);
-
                 if (ModelState.IsValid)
                 {
+                    model.CreationDate = _notesRepository.Get(model.Id).CreationDate;
                     model.LastModificationDate = DateTime.Now;
 
                     _notesRepository.Save(model);
@@ -120,9 +105,6 @@ namespace PutThatOnNotes.Controllers
         public ActionResult Delete(int id)
         {
             var modelToDelete = _notesRepository.Get(id);
-            
-            RememberOriginalValuesOfReadonlyNoteProps(modelToDelete);
-
             return View(modelToDelete);
         }
 
@@ -133,16 +115,14 @@ namespace PutThatOnNotes.Controllers
         {
             try
             {
-                // Check ModelState IsValid? Conversation: - No, just check the Id? - No, even the Id is not needed (Id will be hidden). - Yes it is hidden, but value from html is not and can be violated/changed.
+                // Conversation: Check ModelState IsValid? - No, just check the Id? - No, even the Id is not needed (Id will be hidden). - Yes it is hidden, but value from html is not and can be violated/changed.
 
-                // this maybe triggers validation and also get the html form values even that I have change them here in the back-end (So, put it first Always!).
+                // Conversation: this maybe triggers validation and also get the html form values even that I have change them here in the back-end (So, put it first Always!).
                 //TryValidateModel(model);
 
-                // this should be cleared (for certain keys) if validating those keys is not needed.
+                // Conversation: this should be cleared (for certain keys) if validating those keys is not needed. - NOPE! Just remove the props/keys from Views (hidden TOO !!!)
                 //if (ModelState.IsValid) { }
 
-
-                SetOriginalValuesOfReadonlyNoteModelProps(model);
 
                 _notesRepository.Delete(model.Id);
 
@@ -152,46 +132,6 @@ namespace PutThatOnNotes.Controllers
             {
                 return View(model);
             }
-        }
-
-        /// <summary>
-        /// Marks as valid validation state of note Id/CreationDate/LastModificationDate keys, in order to handle not legal changes to them made in value attribute of hidden html tag. 
-        /// </summary>
-        /// <param name="model">Current Note entity model.</param>
-        private void MarkValidValidationStateForReadonlyNoteProps(Note model)
-        {
-            ModelState.ClearValidationState(nameof(model.Id));
-            ModelState.ClearValidationState(nameof(model.CreationDate));
-            ModelState.ClearValidationState(nameof(model.LastModificationDate));
-
-            ModelState.MarkFieldValid(nameof(model.Id));
-            ModelState.MarkFieldValid(nameof(model.CreationDate));
-            ModelState.MarkFieldValid(nameof(model.LastModificationDate));
-        }
-
-        /// <summary>
-        /// RememberValuesOfReadonlyNoteProps in static fields in order to handles not legal changing of note Id/CreationDate in value attribute of hidden html tag. 
-        /// 
-        /// </summary>
-        /// <param name="model">Current Note entity model.</param>
-        private void RememberOriginalValuesOfReadonlyNoteProps(Note model)
-        {
-            _currentNoteId = model.Id;
-            _currentNoteCreationDate = model.CreationDate;
-            // not needed to remember this for now (but left it for consistency). Now we only are assigning it to DateTime.Now and we don't use its past (original) value. 
-            _currentNoteLastModificationDate = model.LastModificationDate;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model">Current Note entity model.</param>
-        private void SetOriginalValuesOfReadonlyNoteModelProps(Note model)
-        {
-            model.Id = _currentNoteId;
-            model.CreationDate = _currentNoteCreationDate;
-            // not needed to remember this for now (but left it for consistency). Now we only are assigning it to DateTime.Now and we don't use its past (original) value. 
-            model.LastModificationDate = _currentNoteLastModificationDate;
         }
     }
 }
