@@ -38,6 +38,9 @@ namespace PutThatOnNotes
 
             // DB Connection String For EF Core BaseRepository.cs file
             services.AddDbContext<PutThatOnNotesDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:PutThatOnNotesConnString"]));
+
+            // TODO: Refactor DataAccess BaseRepo and DbContext, to be able to use NotesRepository from Dependency Injection.
+            //services.AddSingleton<INotesRepository, NotesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

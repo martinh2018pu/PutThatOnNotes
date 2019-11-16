@@ -11,6 +11,8 @@ namespace PutThatOnNotes.DataAccess
     {
         public PutThatOnNotesDbContext(DbContextOptions<PutThatOnNotesDbContext> options) : base(options)
         {
+            // line down fixed throwing of Exception: Cannot open database "someDb" requested by the login. The login failed. Login failed for user "someUser".
+            this.Database.EnsureCreated();
         }
 
         public DbSet<Note> Notes { get; set; }
