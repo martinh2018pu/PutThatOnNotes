@@ -1,17 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PutThatOnNotes.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PutThatOnNotes.DataAccess
 {
     public class BaseRepository<T> where T : BaseModel
     {
-        protected PutThatOnNotesDbContext _context;
+        protected readonly PutThatOnNotesDbContext _putThatOnNotesDbContext;
         protected DbSet<T> DbSet { get; set; }
 
         public BaseRepository(DbContextOptions<PutThatOnNotesDbContext> options)
         {
-            this._context = new PutThatOnNotesDbContext(options);
-            this.DbSet = _context.Set<T>();
+            _putThatOnNotesDbContext = new PutThatOnNotesDbContext(options);
+            DbSet = _putThatOnNotesDbContext.Set<T>();
+        }
+
+        public List<T> GetAll()
+        {
+            return DbSet.ToList();
         }
 
         public T Get(int id)
@@ -25,7 +32,7 @@ namespace PutThatOnNotes.DataAccess
 
             DbSet.Remove(model);
 
-            _context.SaveChanges();
+            _putThatOnNotesDbContext.SaveChanges();
         }
 
         public void Save(T model)
@@ -39,7 +46,7 @@ namespace PutThatOnNotes.DataAccess
                 Update(model);
             }
 
-            _context.SaveChanges();
+            _putThatOnNotesDbContext.SaveChanges();
         }
 
         private void Create(T model)
@@ -49,7 +56,7 @@ namespace PutThatOnNotes.DataAccess
 
         private void Update(T model)
         {
-            _context.Entry(model).State = EntityState.Modified;
+            _putThatOnNotesDbContext.Entry(model).State = EntityState.Modified;
         }
     }
 }
