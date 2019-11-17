@@ -1,3 +1,6 @@
+[0] // TODO 1: Refactor DataAccess BaseRepo and DbContext, to be able to use NotesRepository from Dependency Injection.
+
+
 [1] .Net Core 3.0
 
 
