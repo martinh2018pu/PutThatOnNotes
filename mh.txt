@@ -1,14 +1,39 @@
+[Current State (aka History of done changes)] 
+
+.net core 2.2 [1][done]
+MVC [2][done]
+
+asp.net core APP on IIS (not Kestrel) [4][ ]
+
+not Containerized (no Docker) [4.2][ ]
+
+has HTTPS, but NOT TESTED (default self included in .net core) [3][ ]
+
+ef core (self included in .net/asp.net core) [null][not sure if is it working correct (for now it is working, without nuget install)]
+
+-----
+
 [0] // TODO 1: Refactor DataAccess BaseRepo and DbContext, to be able to use NotesRepository from Dependency Injection.
+
+[0.2] Add Comment functionality on Notes (from ToDoIt .netFramework repo) 
+
+[0.3] Add (yours idea) - new CommentReply functionality on Comments of Notes.
 
 
 [1] .Net Core 3.0
 
-
 [2] MVC
+
 
 [3] Configure HTTPS
 
 [4] Configure Kestrel instead of IIS (Kestrel web server implementation in ASP.NET Core)
+
+[4.2] Containerize (run in Docker)
+
+[4.3] Orchestrate (try doing it with Kubernetes)
+
+[4.4] Try deploying to Azure (or Alibaba Cloud/AWS Amazon Web Services/Google Cloud).
 
 
 [5] with Quartz Net scheduler:
@@ -22,3 +47,14 @@ In this post, I show how to use the fantastic Quartz.Net scheduler library withi
 
 [6] with MQ lets say Kafka, but I want RabbitMQ:
 ...
+
+
+
+----- Usefull
+
+[From LoanManager( How to add errors from backend to View )]
+{
+  ModelState.AddModelError("Amount", "You cannot get loan");  
+  /* ViewBag.ErrorMessage = "You cannot get loan"; */
+  return View(model);
+}
